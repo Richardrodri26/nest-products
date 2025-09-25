@@ -1,7 +1,24 @@
 import 'dotenv/config';
+import * as joi from 'joi';
 
-// TODO: validar mediante un esquema
+interface EnvVars {
+  PORT: number;
+}
+
+const envsSchema = joi
+  .object({
+    PORT: joi.number().required().default(3000),
+  })
+  .unknown(true);
+
+const { error, value } = envsSchema.validate(process.env);
+
+if (error) {
+  throw new Error(`Config validation error: ${error.message}`);
+}
+
+const envVars: EnvVars = value;
 
 export const envs = {
-  port: process.env.PORT || 3000,
-}
+  port: envVars.PORT,
+};
